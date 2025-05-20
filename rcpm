@@ -1,0 +1,130 @@
+#!/bin/rc
+
+flag e +
+
+# This will eventually get removed
+RCPM_PATH=$PWD/repo
+RCPM_CACHE=$HOME/var/rcpm/bin
+RCPM_DB=/var/db/rcpm
+ROOTFS_REPO=/tmp/fs
+
+if (~ $#RCPM_PATH 0) {
+	printf 'RCPM_PATH is not set\n'
+	exit 1
+}
+
+fn rcpm_help {
+	printf  'Usage: rcpm b|c|d|h|s\n'
+}
+
+fn dl_pkg {
+	cd $RCPM_PATH/$pkg
+	curl -LK url -O
+}
+
+fn chksum_pkg {
+	cd $RCPM_PATH/$pkg
+	if (! sha256sum -c sha256) dl_pkg
+	sha256sum -c sha256
+}
+
+fn unpack_pkg {
+		for (archive in `{awk '{print $2}' sha256}) {
+			switch($archive) {
+				case *.gz
+					tool=gzip
+				case *.xz
+					tool=xz
+				case *.bz2
+					tool=bz2
+				case *
+					exit 1
+			}
+		$tool -dc $archive | pax -r -s ',^[^/]*,src,'
+		}
+}
+
+fn get_ver {
+	version=`{cat ../ver}
+	ver=$version(1)
+	rev=$version(2)
+
+}
+fn packup_pkg {
+	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
+	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
+}
+
+fn create_worktree {
+	if (test ! -d $ROOTFS_REPO/.git/worktrees/$pkg) {
+		test -d $RCPM_DB || doas mkdir -p $RCPM_DB
+		doas git -C $ROOTFS_REPO worktree add --orphan $RCPM_DB/$pkg
+		doas git -C $RCPM_DB/$pkg symbolic-ref HEAD refs/heads/$pkg
+		doas git -C $ROOTFS_REPO config --add branch.master.merge $pkg
+	}
+	if not {printf 'Worktree exists\n'}
+}
+
+fn merge_pkg {
+	doas git -C $ROOTFS_REPO config --add branch.master.merge $pkg
+	doas git -C $ROOTFS_REPO merge $pkg --allow-unrelated --no-edit
+}
+
+fn check_pkgbuilt {
+	if (test ! -f $RCPM_DB/$pkg@$ver-$rev.tar.gz) {
+		printf %s $pkg is not built\n
+		exit 1
+	}
+}
+
+fn pkg_install {
+	create_worktree
+	cd $RCPM_DB/$pkg
+	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | doas pax -r
+	doas git add .
+	echo $pkg@$ver-$rev | doas git commit '--file=-'
+	merge_pkg
+
+}
+
+fn pkg_build {
+	for (pkg) {
+		cd $RCPM_PATH/$pkg
+		if (test ! -f url) git submodule update --init --checkout src
+		if not {
+			chksum_pkg $pkg
+			rm -rf src
+			unpack_pkg $archive
+		}
+		cd src
+		destdir=/tmp/$pid/$pkg
+		../build
+		get_ver
+		cd $destdir
+		packup_pkg
+		pkg_install
+	}
+}
+
+switch($1) {
+	case b
+		shift
+		pkg_build $*
+	case c
+		shift
+		for (pkg) chksum_pkg $pkg
+	case d
+		shift
+		for (pkg) dl_pkg $pkg
+	case h
+		rcpm_help
+		exit 0
+	case i
+		exit 0
+	case s
+		shift
+		for (pkg in $*) find $RCPM_PATH -type d -name $pkg
+	case *
+		printf 'Error!\n'
+		exit 1
+}
