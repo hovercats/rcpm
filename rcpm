@@ -19,12 +19,12 @@ fn rcpm_help {
 
 fn dl_pkg {
 	cd $RCPM_PATH/$pkg
-	curl -LK url -O
+	test -f `{awk '{print $2}' sha256} || curl -LK url -O
 }
 
 fn chksum_pkg {
 	cd $RCPM_PATH/$pkg
-	if (! sha256sum -c sha256) dl_pkg
+	dl_pkg
 	sha256sum -c sha256
 }
 
