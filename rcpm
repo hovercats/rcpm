@@ -52,7 +52,7 @@ fn get_ver {
 }
 fn packup_pkg {
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
-	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
+	pax -w * | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
 }
 
 fn create_worktree {
