@@ -2,11 +2,9 @@
 
 flag e +
 
-# This will eventually get removed
-RCPM_PATH=$PWD/repo
-RCPM_CACHE=$HOME/var/rcpm/bin
-RCPM_ROOT=/tmp/fs
-RCPM_DB=/var/db/rcpm
+# Assume we run locally if no global config is present
+if (test ! -f /etc/rcpm.conf) . ./rcpm.conf
+if not . /etc/rcpm.conf
 
 if (~ $#RCPM_PATH 0) {
 	printf 'RCPM_PATH is not set\n'
