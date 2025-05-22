@@ -6,7 +6,7 @@ flag e +
 RCPM_PATH=$PWD/repo
 RCPM_CACHE=$HOME/var/rcpm/bin
 RCPM_ROOT=/tmp/fs
-RCPM_DB=$RCPM_ROOT/var/db/rcpm
+RCPM_DB=/var/db/rcpm
 
 if (~ $#RCPM_PATH 0) {
 	printf 'RCPM_PATH is not set\n'
@@ -51,7 +51,10 @@ fn get_ver {
 
 }
 fn packup_pkg {
+	mkdir -p ./$RCPM_DB/installed/$pkg
 	get_ver
+	echo $version >./$RCPM_DB/installed/$pkg/ver
+	gen_manifest
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
 	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
 }
@@ -66,17 +69,14 @@ fn check_pkgbuilt {
 }
 
 fn gen_manifest {
-	test -d $RCPM_DB/installed/$pkg || mkdir -p $RCPM_DB/installed/$pkg
-	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -f - \
-		| sed -e '/^\.\/$/d' -e 's/^\.//g' -e 's/\/$//g' \
-		>$RCPM_DB/installed/$pkg/manifest
+	find . | sed -e '/^\.\/$/d' -e 's/^\.//g' -e 's/\/$//g' \
+		>./$RCPM_DB/installed/$pkg/manifest
 }
 
 fn pkg_install {
 	cd $RCPM_ROOT
 	check_pkgbuilt
 	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
-	gen_manifest
 }
 
 fn pkg_build {
