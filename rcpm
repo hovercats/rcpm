@@ -53,7 +53,7 @@ fn get_ver {
 fn packup_pkg {
 	get_ver
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
-	pax -w * | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
+	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
 }
 
 fn check_pkgbuilt {
@@ -67,7 +67,9 @@ fn check_pkgbuilt {
 
 fn gen_manifest {
 	test -d $RCPM_DB/installed/$pkg || mkdir -p $RCPM_DB/installed/$pkg
-	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -f - > $RCPM_DB/installed/$pkg/manifest
+	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -f - \
+		| sed -e '/^\.\/$/d' -e 's/^\.//g' -e 's/\/$//g' \
+		>$RCPM_DB/installed/$pkg/manifest
 }
 
 fn pkg_install {
