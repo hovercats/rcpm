@@ -86,7 +86,10 @@ fn pkg_build {
 		if not {
 			chksum_pkg $pkg
 			rm -rf src
-			unpack_pkg $archive
+			if (test -f fetch.rc) {
+				./fetch.rc
+			}
+			if not unpack_pkg $archive
 		}
 		cd src
 		destdir=/tmp/$pid/$pkg
