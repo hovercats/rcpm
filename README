@@ -3,14 +3,6 @@ rcpm
 
 A simple package manager written in plan9's rc[1] shell.
 
-Taking notes from kiss'[1] ease of packaging, and some of Oasis'[3] git
-features we landed here.
-
-Its designed to work in conjunction with Oasis, thus packages built is supposed
-to be merged into /, similarly to Oasis.
-However, there should be nothing agaist using this outside of this aswell.
-
-Still very much WIP, so use at your own risk.
 
 Layout
 ------
@@ -30,5 +22,3 @@ Requirements
 
 
 [1] http://doc.cat-v.org/plan_9/2nd_edition/papers/rc
-[2] https://github.com/dylanaraps/kiss
-[3] https://github.com/oasislinux/oasis
