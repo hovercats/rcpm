@@ -66,6 +66,7 @@ fn check_pkgbuilt {
 }
 
 fn gen_manifest {
+	test -d $RCPM_DB/installed/$pkg || mkdir -p $RCPM_DB/installed/$pkg
 	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -f - > $RCPM_DB/installed/$pkg/manifest
 }
 
@@ -73,6 +74,7 @@ fn pkg_install {
 	cd $RCPM_ROOT
 	check_pkgbuilt
 	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
+	gen_manifest
 }
 
 fn pkg_build {
