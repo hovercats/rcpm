@@ -77,6 +77,10 @@ fn check_pkgbuilt {
 	}
 }
 
+fn gen_manifest {
+	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -f - > $RCPM_DB/installed/$pkg/manifest
+}
+
 fn pkg_install {
 	create_worktree
 	cd $RCPM_DB/$pkg
