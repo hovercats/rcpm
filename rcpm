@@ -130,6 +130,13 @@ switch($1) {
 		for (pkg) pkg_install $pkg
 	case l
 		shift
+		if (~ $#* 0) {
+			for (file in $RCPM_ROOT/$RCPM_DB/installed/*) {
+				pkg=`{basename $file}
+				get_local_ver
+				echo $pkg $_ver-$_rev
+			}
+		}
 		for (pkg) list_pkgs $pkg
 	case m
 		shift
