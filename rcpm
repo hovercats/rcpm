@@ -34,7 +34,7 @@ fn unpack_pkg {
 				case *.xz
 					tool=xz
 				case *.bz2
-					tool=bz2
+					tool=bzip2
 				case *
 					exit 1
 			}
