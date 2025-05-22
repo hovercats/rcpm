@@ -6,7 +6,7 @@ flag e +
 RCPM_PATH=$PWD/repo
 RCPM_CACHE=$HOME/var/rcpm/bin
 RCPM_DB=/var/db/rcpm
-ROOTFS_REPO=/tmp/fs
+RCPM_ROOT=/tmp/fs
 
 if (~ $#RCPM_PATH 0) {
 	printf 'RCPM_PATH is not set\n'
@@ -56,18 +56,18 @@ fn packup_pkg {
 }
 
 fn create_worktree {
-	if (test ! -d $ROOTFS_REPO/.git/worktrees/$pkg) {
+	if (test ! -d $RCPM_ROOT/.git/worktrees/$pkg) {
 		test -d $RCPM_DB || doas mkdir -p $RCPM_DB
-		doas git -C $ROOTFS_REPO worktree add --orphan $RCPM_DB/$pkg
+		doas git -C $RCPM_ROOT worktree add --orphan $RCPM_DB/$pkg
 		doas git -C $RCPM_DB/$pkg symbolic-ref HEAD refs/heads/$pkg
-		doas git -C $ROOTFS_REPO config --add branch.master.merge $pkg
+		doas git -C $RCPM_ROOT config --add branch.master.merge $pkg
 	}
 	if not {printf 'Worktree exists\n'}
 }
 
 fn merge_pkg {
-	doas git -C $ROOTFS_REPO config --add branch.master.merge $pkg
-	doas git -C $ROOTFS_REPO merge $pkg --allow-unrelated --no-edit
+	doas git -C $RCPM_ROOT config --add branch.master.merge $pkg
+	doas git -C $RCPM_ROOT merge $pkg --allow-unrelated --no-edit
 }
 
 fn check_pkgbuilt {
