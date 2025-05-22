@@ -5,8 +5,8 @@ flag e +
 # This will eventually get removed
 RCPM_PATH=$PWD/repo
 RCPM_CACHE=$HOME/var/rcpm/bin
-RCPM_DB=/var/db/rcpm
 RCPM_ROOT=/tmp/fs
+RCPM_DB=$RCPM_ROOT/var/db/rcpm
 
 if (~ $#RCPM_PATH 0) {
 	printf 'RCPM_PATH is not set\n'
@@ -57,7 +57,7 @@ fn packup_pkg {
 
 fn check_pkgbuilt {
 	if (test ! -f $RCPM_DB/$pkg@$ver-$rev.tar.gz) {
-		printf %s $pkg is not built\n
+		echo  "$pkg is not built"
 		exit 1
 	}
 }
@@ -68,6 +68,7 @@ fn gen_manifest {
 
 fn pkg_install {
 	cd $RCPM_ROOT
+	check_pkgbuilt
 	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | doas pax -r
 }
 
