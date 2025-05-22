@@ -55,21 +55,6 @@ fn packup_pkg {
 	pax -w * | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
 }
 
-fn create_worktree {
-	if (test ! -d $RCPM_ROOT/.git/worktrees/$pkg) {
-		test -d $RCPM_DB || doas mkdir -p $RCPM_DB
-		doas git -C $RCPM_ROOT worktree add --orphan $RCPM_DB/$pkg
-		doas git -C $RCPM_DB/$pkg symbolic-ref HEAD refs/heads/$pkg
-		doas git -C $RCPM_ROOT config --add branch.master.merge $pkg
-	}
-	if not {printf 'Worktree exists\n'}
-}
-
-fn merge_pkg {
-	doas git -C $RCPM_ROOT config --add branch.master.merge $pkg
-	doas git -C $RCPM_ROOT merge $pkg --allow-unrelated --no-edit
-}
-
 fn check_pkgbuilt {
 	if (test ! -f $RCPM_DB/$pkg@$ver-$rev.tar.gz) {
 		printf %s $pkg is not built\n
@@ -82,13 +67,8 @@ fn gen_manifest {
 }
 
 fn pkg_install {
-	create_worktree
-	cd $RCPM_DB/$pkg
+	cd $RCPM_ROOT
 	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | doas pax -r
-	doas git add .
-	echo $pkg@$ver-$rev | doas git commit '--file=-'
-	merge_pkg
-
 }
 
 fn pkg_build {
