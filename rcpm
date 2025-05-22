@@ -51,6 +51,7 @@ fn get_ver {
 
 }
 fn packup_pkg {
+	get_ver
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
 	pax -w * | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
 }
@@ -85,7 +86,6 @@ fn pkg_build {
 		cd src
 		destdir=/tmp/$pid/$pkg
 		../build
-		get_ver
 		cd $destdir
 		packup_pkg
 		pkg_install
