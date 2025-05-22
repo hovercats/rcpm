@@ -59,9 +59,10 @@ fn packup_pkg {
 fn check_pkgbuilt {
 	get_ver
 	if (test ! -f $RCPM_CACHE/$pkg@$ver-$rev.tar.gz) {
-		echo  "$pkg is not built"
+		echo "$pkg is not built"
 		exit 1
 	}
+	if not status=()
 }
 
 fn gen_manifest {
