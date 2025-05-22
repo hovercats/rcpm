@@ -72,7 +72,7 @@ fn gen_manifest {
 fn pkg_install {
 	cd $RCPM_ROOT
 	check_pkgbuilt
-	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | doas pax -r
+	gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
 }
 
 fn pkg_build {
