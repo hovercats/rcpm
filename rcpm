@@ -69,7 +69,9 @@ fn check_pkgbuilt {
 }
 
 fn gen_manifest {
-	find . | sed -e '/^\.\/$/d' -e 's/^\.//g' -e 's/\/$//g' \
+	find . | sed -e '/^\.\/$/d' \
+		-e 's/^\.//g' -e 's/\/$//g' \
+		-e '/^[[:space:]]*$/d' \
 		>./$RCPM_DB/installed/$pkg/manifest
 }
 
