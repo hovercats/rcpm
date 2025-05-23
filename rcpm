@@ -17,7 +17,20 @@ fn rcpm_help {
 
 fn dl_pkg {
 	cd $RCPM_PATH/$pkg
-	test -f `{awk '{print $2}' sha256} || curl -LK url -O
+	if (test -f url) {
+		if (test -f sha256) {
+			if (test ! -f `{awk '{print $2}' sha256}) curl -LK url -O
+			if not printf 'File already downloaded.\n'
+		}
+		if not {
+			printf 'sha256 file not found, downloading anyway...\n'
+			curl -LK url -O
+		}
+	}
+	if not {
+		printf 'url file not found\n'
+		exit 1
+	}
 }
 
 fn chksum_pkg {
