@@ -28,7 +28,7 @@ fn dl_pkg {
 		}
 	}
 	if not {
-		printf 'url file not found\n'
+		printf 'url file not found!\n'
 		exit 1
 	}
 }
@@ -36,7 +36,11 @@ fn dl_pkg {
 fn chksum_pkg {
 	cd $RCPM_PATH/$pkg
 	dl_pkg
-	sha256sum -c sha256
+	if (test -f sha256) sha256sum -c sha256
+	if not {
+		printf 'sha256 file not found, cannot verify sha256sum!\n'
+		exit 1
+	}
 }
 
 fn unpack_pkg {
