@@ -80,24 +80,22 @@ fn pkg_install {
 }
 
 fn pkg_build {
-	for (pkg) {
-		cd $RCPM_PATH/$pkg
-		if (test ! -f url) git submodule update --init --checkout src
-		if not {
-			chksum_pkg $pkg
-			rm -rf src
-			if (test -f fetch.rc) {
-				./fetch.rc
-			}
-			if not unpack_pkg $archive
+	cd $RCPM_PATH/$pkg
+	if (test ! -f url) git submodule update --init --checkout src
+	if not {
+		chksum_pkg $pkg
+		rm -rf src
+		if (test -f fetch.rc) {
+			./fetch.rc
 		}
-		cd src
-		destdir=/tmp/$pid/$pkg
-		../build
-		cd $destdir
-		packup_pkg
-		pkg_install
+		if not unpack_pkg $archive
 	}
+	cd src
+	destdir=/tmp/$pid/$pkg
+	../build
+	cd $destdir
+	packup_pkg
+	pkg_install
 }
 
 fn get_manifest {
@@ -118,7 +116,7 @@ fn list_pkgs {
 switch($1) {
 	case b
 		shift
-		pkg_build $*
+		for (pkg) pkg_build $pkg
 	case c
 		shift
 		for (pkg) chksum_pkg $pkg
