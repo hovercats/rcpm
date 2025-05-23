@@ -98,7 +98,10 @@ fn pkg_install {
 
 fn pkg_build {
 	cd $RCPM_PATH/$pkg
-	if (test ! -f url) git submodule update --init --checkout src
+	if (test ! -f url) {
+		git submodule update --init --checkout src
+		git -C src clean -xfdq
+	}
 	if not {
 		chksum_pkg $pkg
 		rm -rf src
