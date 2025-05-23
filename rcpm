@@ -29,11 +29,11 @@ fn chksum_pkg {
 fn unpack_pkg {
 		for (archive in `{awk '{print $2}' sha256}) {
 			switch($archive) {
-				case *.gz
+				case *.tar.gz
 					tool=gzip
-				case *.xz
+				case *.tar.xz
 					tool=xz
-				case *.bz2
+				case *.tar.bz2
 					tool=bzip2
 				case *
 					exit 1
