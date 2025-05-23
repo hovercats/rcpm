@@ -133,6 +133,13 @@ fn list_pkgs {
 	echo $pkg $_ver-$_rev
 }
 
+fn rm_pkgs {
+	filelist=`{cat $RCPM_ROOT/$RCPM_DB/$pkg/manifest}
+	for (files in $filelist) {
+		rmdir $RCPM_ROOT/$files >[2=] || rm -f $RCPM_ROOT/$files >[2=]
+	}
+}
+
 switch($1) {
 	case b
 		shift
@@ -162,6 +169,9 @@ switch($1) {
 	case m
 		shift
 		for (pkg) get_manifest $pkg
+	case r
+		shift
+		for (pkg) rm_pkgs $pkg
 	case s
 		shift
 		for (pkg in $*) find $RCPM_PATH -type d -name $pkg
