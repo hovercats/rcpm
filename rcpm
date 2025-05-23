@@ -12,7 +12,7 @@ if (~ $#RCPM_PATH 0) {
 }
 
 fn rcpm_help {
-	printf  'Usage: rcpm b|c|d||h|i|l|s\n'
+	printf  'Usage: rcpm b|c|d||h|i|l|m|s\n'
 }
 
 fn dl_pkg {
