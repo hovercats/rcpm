@@ -49,9 +49,9 @@ fn get_ver {
 
 }
 fn packup_pkg {
-	mkdir -p ./$RCPM_DB/installed/$pkg
+	mkdir -p ./$RCPM_DB/$pkg
 	get_ver
-	echo $version >./$RCPM_DB/installed/$pkg/ver
+	echo $version >./$RCPM_DB/$pkg/ver
 	gen_manifest
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
 	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
@@ -70,7 +70,7 @@ fn gen_manifest {
 	find . | sed -e '/^\.\/$/d' \
 		-e 's/^\.//g' -e 's/\/$//g' \
 		-e '/^[[:space:]]*$/d' \
-		>./$RCPM_DB/installed/$pkg/manifest
+		>./$RCPM_DB/$pkg/manifest
 }
 
 fn pkg_install {
@@ -101,11 +101,11 @@ fn pkg_build {
 }
 
 fn get_manifest {
-	cat $RCPM_ROOT/$RCPM_DB/installed/$pkg/manifest
+	cat $RCPM_ROOT/$RCPM_DB/$pkg/manifest
 }
 
 fn get_local_ver {
-	_version=`{cat $RCPM_ROOT/$RCPM_DB/installed/$pkg/ver}
+	_version=`{cat $RCPM_ROOT/$RCPM_DB/$pkg/ver}
 	_ver=$_version(1)
 	_rev=$_version(2)
 }
@@ -134,7 +134,7 @@ switch($1) {
 	case l
 		shift
 		if (~ $#* 0) {
-			for (file in $RCPM_ROOT/$RCPM_DB/installed/*) {
+			for (file in $RCPM_ROOT/$RCPM_DB/*) {
 				pkg=`{basename $file}
 				get_local_ver
 				echo $pkg $_ver-$_rev
