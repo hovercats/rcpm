@@ -4,6 +4,19 @@ rcpm
 A simple package manager written in plan9's rc[1] shell.
 
 
+Status
+------
+[x] build packages
+[ ] conflict handling
+[x] fetch tarballs/submodules
+[ ] handle dependencies
+[x] print package manifest
+[x] print package version/list of installed packages
+[x] remove packages
+[ ] update out-of-date pacakges
+[ ] ...
+
+
 Layout
 ------
 $pkg/
@@ -13,12 +26,15 @@ $pkg/
 	url (not if using submodule)
 	ver
 
+
 Requirements
 ------------
 - rc (Most implementations should work)
 - POSIX utilities
-- git
+- git (optional, but required for submodule support)
 - pax
 
 
 [1] http://doc.cat-v.org/plan_9/2nd_edition/papers/rc
+[2] https://github.com/dylanaraps/kiss
+[3] https://github.com/oasislinux/oasis
