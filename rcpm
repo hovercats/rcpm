@@ -141,7 +141,9 @@ fn update_pkg {
 			echo $pkg is up to date
 		}
 		if not {
-			build_pkg $pkg
+			get_ver
+			if (check_prebuilt) build_pkg $pkg
+			if not install_pkg $pkg
 		}
 	}
 }
