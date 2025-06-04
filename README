@@ -13,7 +13,7 @@ Status
 [x] print package manifest
 [x] print package version/list of installed packages
 [x] remove packages
-[ ] update out-of-date pacakges
+[x] update out-of-date pacakges
 [ ] ...
 
 
