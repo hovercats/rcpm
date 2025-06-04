@@ -87,13 +87,13 @@ fn gen_manifest {
 		sort -ru >./$RCPM_DB/$pkg/manifest
 }
 
-fn pkg_install {
+fn install_pkg {
 	cd $RCPM_ROOT
 	get_ver
 	check_prebuilt || gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
 }
 
-fn pkg_build {
+fn build_pkg {
 	cd $RCPM_PATH/$pkg
 	if (test ! -f url) {
 		git submodule update --init --checkout src
@@ -112,7 +112,7 @@ fn pkg_build {
 	../build
 	cd $destdir
 	packup_pkg
-	pkg_install
+	install_pkg
 }
 
 
@@ -122,26 +122,26 @@ fn get_local_ver {
 	_rev=$_version(2)
 }
 
-fn list_pkgs {
+fn list_pkg {
 	get_local_ver
 	echo $pkg $_ver-$_rev
 }
 
-fn rm_pkgs {
+fn rm_pkg {
 	filelist=`{cat $RCPM_ROOT/$RCPM_DB/$pkg/manifest}
 	for (files in $filelist) {
 		rmdir $RCPM_ROOT/$files >[2=] || rm -f $RCPM_ROOT/$files >[2=]
 	}
 }
 
-fn pkg_update {
+fn update_pkg {
 	for (file in $RCPM_ROOT/$RCPM_DB/*) {
 		pkg=`{basename $file}
 		if (cmp -s $RCPM_ROOT/$RCPM_DB/$pkg/ver $RCPM_PATH/$pkg/ver) {
 			echo $pkg is up to date
 		}
 		if not {
-			pkg_build $pkg
+			build_pkg $pkg
 		}
 	}
 }
@@ -149,7 +149,7 @@ fn pkg_update {
 switch($1) {
 	case b
 		shift
-		for (pkg) pkg_build $pkg
+		for (pkg) build_pkg $pkg
 	case c
 		shift
 		for (pkg) chksum_pkg $pkg
@@ -160,7 +160,7 @@ switch($1) {
 		rcpm_help
 	case i
 		shift
-		for (pkg) pkg_install $pkg
+		for (pkg) install_pkg $pkg
 	case l
 		shift
 		if (~ $#* 0) {
@@ -170,17 +170,17 @@ switch($1) {
 				echo $pkg $_ver-$_rev
 			}
 		}
-		for (pkg) list_pkgs $pkg
+		for (pkg) list_pkg $pkg
 	case m
 		cat $RCPM_ROOT/$RCPM_DB/$2/manifest
 	case r
 		shift
-		for (pkg) rm_pkgs $pkg
+		for (pkg) rm_pkg $pkg
 	case s
 		shift
 		for (pkg in $*) find $RCPM_PATH -type d -name $pkg
 	case u
-		pkg_update
+		update_pkg
 	case *
 		printf 'Error!\n'
 		exit 1
