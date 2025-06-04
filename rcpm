@@ -91,6 +91,7 @@ fn install_pkg {
 	cd $RCPM_ROOT
 	get_ver
 	check_prebuilt || gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
+	echo $pkg installed successfully
 }
 
 fn build_pkg {
