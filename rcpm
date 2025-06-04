@@ -115,9 +115,6 @@ fn pkg_build {
 	pkg_install
 }
 
-fn get_manifest {
-	cat $RCPM_ROOT/$RCPM_DB/$pkg/manifest
-}
 
 fn get_local_ver {
 	_version=`{cat $RCPM_ROOT/$RCPM_DB/$pkg/ver}
@@ -175,8 +172,7 @@ switch($1) {
 		}
 		for (pkg) list_pkgs $pkg
 	case m
-		shift
-		for (pkg) get_manifest $pkg
+		cat $RCPM_ROOT/$RCPM_DB/$2/manifest
 	case r
 		shift
 		for (pkg) rm_pkgs $pkg
