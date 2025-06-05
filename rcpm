@@ -31,7 +31,7 @@ fn dl_pkg {
 			if not log 'File already downloaded'
 		}
 		if not {
-			log 'sha256 file not found, downloading anyway...'
+			log 'Warning: sha256 file not found, downloading anyway...'
 			curl -LK url -O
 		}
 	}
@@ -71,6 +71,7 @@ fn get_ver {
 	rev=$version(2)
 
 }
+
 fn packup_pkg {
 	mkdir -p ./$RCPM_DB/$pkg
 	get_ver
@@ -121,7 +122,6 @@ fn build_pkg {
 	packup_pkg
 	install_pkg
 }
-
 
 fn get_local_ver {
 	_version=`{cat $RCPM_ROOT/$RCPM_DB/$pkg/ver}
