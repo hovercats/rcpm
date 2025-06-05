@@ -96,8 +96,8 @@ fn gen_manifest {
 fn install_pkg {
 	cd $RCPM_ROOT
 	get_ver
-	check_prebuilt || gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
-	log $pkg installed successfully
+	check_prebuilt || {gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
+	log $pkg installed successfully}
 }
 
 fn build_pkg {
