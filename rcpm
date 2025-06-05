@@ -6,13 +6,21 @@ flag e +
 if (test ! -f /etc/rcpm.conf) . ./rcpm.conf
 if not . /etc/rcpm.conf
 
-if (~ $#RCPM_PATH 0) {
-	printf 'RCPM_PATH is not set\n'
+fn log {
+	printf '%s\n' $"*
+}
+
+fn die {
+	log ERROR: $"*
 	exit 1
 }
 
+if (~ $#RCPM_PATH 0) {
+	die 'RCPM_PATH is not set'
+}
+
 fn rcpm_help {
-	printf  'Usage: rcpm b|c|d||h|i|l|m|s\n'
+	log 'Usage: rcpm b|c|d||h|i|l|m|s'
 }
 
 fn dl_pkg {
@@ -20,16 +28,15 @@ fn dl_pkg {
 	if (test -f url) {
 		if (test -f sha256) {
 			if (test ! -f `{awk '{print $2}' sha256}) curl -LK url -O
-			if not printf 'File already downloaded.\n'
+			if not log 'File already downloaded'
 		}
 		if not {
-			printf 'sha256 file not found, downloading anyway...\n'
+			log 'sha256 file not found, downloading anyway...'
 			curl -LK url -O
 		}
 	}
 	if not {
-		printf 'url file not found!\n'
-		exit 1
+		die 'Url file not found!'
 	}
 }
 
@@ -38,8 +45,7 @@ fn chksum_pkg {
 	dl_pkg
 	if (test -f sha256) sha256sum -c sha256
 	if not {
-		printf 'sha256 file not found, cannot verify sha256sum!\n'
-		exit 1
+		die 'sha256 file not found, cannot verify sha256sum!'
 	}
 }
 
@@ -68,7 +74,7 @@ fn get_ver {
 fn packup_pkg {
 	mkdir -p ./$RCPM_DB/$pkg
 	get_ver
-	printf '%s' $"version >./$RCPM_DB/$pkg/ver
+	printf $"version >./$RCPM_DB/$pkg/ver
 	gen_manifest
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
 	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
@@ -76,7 +82,7 @@ fn packup_pkg {
 
 fn check_prebuilt {
 	if (test ! -f $RCPM_CACHE/$pkg@$ver-$rev.tar.gz) {
-		echo $pkg is not built
+		log $pkg is not built
 	}
 }
 
@@ -91,7 +97,7 @@ fn install_pkg {
 	cd $RCPM_ROOT
 	get_ver
 	check_prebuilt || gzip -dc $RCPM_CACHE/$pkg@$ver-$rev.tar.gz | pax -r
-	echo $pkg installed successfully
+	log $pkg installed successfully
 }
 
 fn build_pkg {
@@ -125,7 +131,7 @@ fn get_local_ver {
 
 fn list_pkg {
 	get_local_ver
-	echo $pkg $_ver-$_rev
+	log $pkg $_ver-$_rev
 }
 
 fn rm_pkg {
@@ -139,7 +145,7 @@ fn update_pkg {
 	for (file in $RCPM_ROOT/$RCPM_DB/*) {
 		pkg=`{basename $file}
 		if (cmp -s $RCPM_ROOT/$RCPM_DB/$pkg/ver $RCPM_PATH/$pkg/ver) {
-			echo $pkg is up to date
+			log $pkg is up to date
 		}
 		if not {
 			get_ver
@@ -171,7 +177,7 @@ switch($1) {
 			for (file in $RCPM_ROOT/$RCPM_DB/*) {
 				pkg=`{basename $file}
 				get_local_ver
-				echo $pkg $_ver-$_rev
+				log $pkg $_ver-$_rev
 			}
 		case *
 			for (pkg) list_pkg $pkg
@@ -187,6 +193,7 @@ switch($1) {
 	case u
 		update_pkg
 	case *
-		printf 'Error!\n'
+		log 'Error: Invalid arguement!'
+		rcpm_help
 		exit 1
 }
