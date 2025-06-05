@@ -68,7 +68,7 @@ fn get_ver {
 fn packup_pkg {
 	mkdir -p ./$RCPM_DB/$pkg
 	get_ver
-	echo $version >./$RCPM_DB/$pkg/ver
+	printf '%s' $"version >./$RCPM_DB/$pkg/ver
 	gen_manifest
 	test -d $RCPM_CACHE || mkdir -p $RCPM_CACHE
 	pax -w . | gzip > $RCPM_CACHE/$pkg@$ver-$rev.tar.gz
