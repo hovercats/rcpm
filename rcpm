@@ -10,13 +10,13 @@ fn log {
 	printf '%s\n' $"*
 }
 
-fn die {
+fn errexit {
 	log ERROR: $"*
 	exit 1
 }
 
 if (~ $#RCPM_PATH 0) {
-	die 'RCPM_PATH is not set'
+	errexit 'RCPM_PATH is not set'
 }
 
 fn rcpm_help {
@@ -36,7 +36,7 @@ fn dl_pkg {
 		}
 	}
 	if not {
-		die 'Url file not found!'
+		errexit 'Url file not found!'
 	}
 }
 
@@ -45,7 +45,7 @@ fn chksum_pkg {
 	dl_pkg
 	if (test -f sha256) sha256sum -c sha256
 	if not {
-		die 'sha256 file not found, cannot verify sha256sum!'
+		errexit 'sha256 file not found, cannot verify sha256sum!'
 	}
 }
 
