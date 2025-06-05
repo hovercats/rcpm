@@ -44,19 +44,19 @@ fn chksum_pkg {
 }
 
 fn unpack_pkg {
-		for (archive in `{awk '{print $2}' sha256}) {
-			switch($archive) {
-				case *.tar.gz
-					tool=gzip
-				case *.tar.xz
-					tool=xz
-				case *.tar.bz2
-					tool=bzip2
-				case *
-					exit 1
-			}
-		$tool -dc $archive | pax -r -s ',^[^/]*,src,'
+	for (archive in `{awk '{print $2}' sha256}) {
+		switch($archive) {
+			case *.tar.gz
+				tool=gzip
+			case *.tar.xz
+				tool=xz
+			case *.tar.bz2
+				tool=bzip2
+			case *
+				exit 1
 		}
+	$tool -dc $archive | pax -r -s ',^[^/]*,src,'
+	}
 }
 
 fn get_ver {
